@@ -11,7 +11,6 @@ def scrape():
 
     result = requests.get(modulepath).json()
     module_list = []
-    print("scraping...")
     for module in result:
         
         mc = module["moduleCode"]
@@ -22,7 +21,7 @@ def scrape():
         module_data = requests.get(moduleinfopath).json()
         semData = module_data["semesterData"]
         mc1 = module_data["moduleCredit"]
-        
+        print("scraping...")
         for i in range(0, len(semData)):
             if semData[i]["semester"] == 2:
                 obj = {"moduleCode": mc, "title": title, "moduleCredit": mc1, "timetable": semData[i]["timetable"]}
@@ -63,16 +62,10 @@ def format():
                     weeks = weeks["weeks"]
                     
                 elif "weekInterval" in weeks:
-                    
                     weeks = getWeeks(weeks["start"], weeks["end"], weeks["weekInterval"])
-                    
-                else:
-                    weeks = getWeeks(weeks["start"], weeks["end"], 1)
             
-            if weeks == []:
-                continue
             
-            newTt = {"classNumber": classnumber, "startTime": startTime, "endTime": endTime, "day": day, "lessonType": lessonType, "weeks": weeks}
+            newTt = {"classnumber": classnumber, "startTime": startTime, "endTime": endTime, "day": day, "lessonType": lessonType}
             datalist.append(newTt)
            
         newObj = {"code": code, "title": title, "moduleCredits": mc, "timetable": datalist}
@@ -97,19 +90,21 @@ def getWeeks(start_date, end_date, week_interval):
     
     for i in range(start_week, end_week, week_interval_int):
         week_list.append(i)
-        
-    return week_list
     
     
 
 def getWeek(date):
     start_sem_date = datetime.date(2023, 1, 9)
     delta = date - start_sem_date
-    week = math.ceil(delta.days / 7)
+    
+    week = int(math.ceil(delta / 7))
     
     return week
-            
+        
+        
+        
+        
 if __name__=='__main__':
-    scrape()
+    #scrape()
     format()
     
