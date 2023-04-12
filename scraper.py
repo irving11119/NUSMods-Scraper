@@ -24,8 +24,8 @@ def scrape():
         mc1 = module_data["moduleCredit"]
         
         for i in range(0, len(semData)):
-            if semData[i]["semester"] == 2:
-                obj = {"moduleCode": mc, "title": title, "moduleCredit": mc1, "timetable": semData[i]["timetable"]}
+            if semData[i]["semester"] == 1 or  semData[i]["semester"] == 2:
+                obj = {"moduleCode": mc, "title": title, "moduleCredit": mc1, "semester": semData[i]["semester"], "timetable": semData[i]["timetable"]}
                 module_list.append(obj)
         
         
@@ -48,6 +48,7 @@ def format():
         mc = obj["moduleCredit"]
         
         timetable = obj["timetable"]
+        sem = obj["semester"]
         datalist = []
         for data in timetable:
             classnumber = data["classNo"]
@@ -63,11 +64,12 @@ def format():
                     weeks = weeks["weeks"]
                     
                 elif "weekInterval" in weeks:
-                    
-                    weeks = getWeeks(weeks["start"], weeks["end"], weeks["weekInterval"])
+                    if weeks["weekInterval"] == 0:
+                        continue
+                    weeks = getWeeks(sem, weeks["start"], weeks["end"], weeks["weekInterval"])
                     
                 else:
-                    weeks = getWeeks(weeks["start"], weeks["end"], 1)
+                    weeks = getWeeks(sem, weeks["start"], weeks["end"], 1)
             
             if weeks == []:
                 continue
@@ -75,7 +77,7 @@ def format():
             newTt = {"classNumber": classnumber, "startTime": startTime, "endTime": endTime, "day": day, "lessonType": lessonType, "weeks": weeks}
             datalist.append(newTt)
            
-        newObj = {"code": code, "title": title, "moduleCredits": mc, "timetable": datalist}
+        newObj = {"code": code, "title": title, "moduleCredits": mc, "semester": sem, "timetable": datalist}
         objList.append(newObj)
     
     with open('data.json', 'w') as fp:
@@ -84,7 +86,7 @@ def format():
     print("Done!")
     
     
-def getWeeks(start_date, end_date, week_interval):
+def getWeeks(sem, start_date, end_date, week_interval):
     start_date_obj = datetime.datetime.strptime(start_date, "%Y-%m-%d").date()
     end_date_obj = datetime.datetime.strptime(end_date, "%Y-%m-%d").date()
     
@@ -92,24 +94,32 @@ def getWeeks(start_date, end_date, week_interval):
     
     week_list = []
     
-    start_week = getWeek(start_date_obj)
-    end_week = getWeek(end_date_obj)
+    start_week = getWeek(start_date_obj,sem)
+    end_week = getWeek(end_date_obj, sem)
     
-    for i in range(start_week, end_week, week_interval_int):
+    for i in range(start_week, min(end_week, 13), week_interval_int):
         week_list.append(i)
         
     return week_list
     
     
 
-def getWeek(date):
-    start_sem_date = datetime.date(2023, 1, 9)
+def getWeek(date, sem):
+    if sem == 2:
+         start_sem_date = datetime.date(2023, 1, 9)
+         
+    if sem == 1:
+        start_sem_date = datetime.date(2022, 8,8)
+              
     delta = date - start_sem_date
-    week = math.ceil(delta.days / 7)
+    week = calculateWeekNumber(delta)
     
     return week
+
+def calculateWeekNumber(delta):
+    return int(delta.days / 7) + 1
             
 if __name__=='__main__':
-    scrape()
+    #scrape()
     format()
     
