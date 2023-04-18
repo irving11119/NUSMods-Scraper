@@ -87,6 +87,18 @@ def format():
     
     
 def getWeeks(sem, start_date, end_date, week_interval):
+    """
+    Returns a list of integers representing which weeks of the semester there are classes
+
+    Args:
+        sem (int): _description_
+        start_date (datetime): start date of the classes
+        end_date (datetime): end date of the classes
+        week_interval (int): interval between classes
+
+    Returns:
+        list: list of weeks a lesson runs for
+    """
     start_date_obj = datetime.datetime.strptime(start_date, "%Y-%m-%d").date()
     end_date_obj = datetime.datetime.strptime(end_date, "%Y-%m-%d").date()
     
@@ -105,6 +117,15 @@ def getWeeks(sem, start_date, end_date, week_interval):
     
 
 def getWeek(date, sem):
+    """Gets the weeknumber of a date based on the semester 
+
+    Args:
+        date (datetime): The date to be checked
+        sem (int): The semester for the date
+
+    Returns:
+        int: The week of the semester
+    """
     if sem == 2:
          start_sem_date = datetime.date(2023, 1, 9)
          
@@ -117,9 +138,17 @@ def getWeek(date, sem):
     return week
 
 def calculateWeekNumber(delta):
+    """Calculates the week number based on the delta
+
+    Args:
+        delta (int): The days seperating two dates
+
+    Returns:
+        int: The integer representation of the number of days between 2 dates
+    """
     return int(delta.days / 7) + 1
             
 if __name__=='__main__':
-    #scrape()
+    scrape()
     format()
     
