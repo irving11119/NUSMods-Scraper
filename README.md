@@ -47,4 +47,5 @@ This prints to the console all the possible lesson types available across all mo
 ## Acknowledgements
 
 [NUSMods API v2](https://api.nusmods.com/v2/#/)
+
 [NUSMods Repository](https://github.com/nusmodifications/nusmods)
